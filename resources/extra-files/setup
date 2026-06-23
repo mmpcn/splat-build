@@ -1,0 +1,38 @@
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home 
+export STAR_JAVA=$JAVA_HOME/bin/java
+export DEV_HOME=/Users/mm/Development/SPLAT-VO/git/
+export SOURCE_DIR=$DEV_HOME/starjava/
+export DEV_INSTALL=/Users/mm/Development/SPLAT-VO/splat-install/
+
+export ANT_PATH=$SOURCE_DIR/ant/bin
+
+export PATH=${JAVA_HOME}/bin:$DEV_INSTALL/bin:$PATH
+
+export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+
+# IZPACKexport PATH /loc/pwdc/pdraper/java/izpack/bin:${PATH}
+export IZPACK_PATH=/Application/IzPack/bin
+export PATH=$ANT_PATH:$PATH:$IZPACK_PATH
+export SOURCE_DIR=$DEV_HOME/starjava/
+
+export SPLAT_ROOT=$SOURCE_DIR/splat
+
+#export ADDLIBS /loc/pwda/pdraper/gaiadev/ast/lib
+#if ( $?LD_LIBRARY_PATH ) then
+  export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib:$JAVA_HOME/jre/lib/ext
+#endif
+
+#  Convenience variables:
+export SPLAT_WORK=$SOURCE_DIR/splat/src/main/uk/ac/starlink/splat
+
+
+cat > $HOME/.stardev.properties <<EOF
+star.dir=$DEV_INSTALL
+#/Users/mm/development/SPLAT-VO/splat-install
+stardev=/Users/mm/development/SPLAT-VO/git/starjava-repository
+#perl=/star/Perl/bin/perl
+webstart.codebase=http://astro.dur.ac.uk/~pdraper/starjava
+webstart.signer=Peter W. Draper
+#http.proxyHost=wwwcache.dur.ac.uk
+#http.proxyPort=8080
+EOF
