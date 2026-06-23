@@ -1,0 +1,112 @@
+name: Build SPLAT installer
+
+# Triggered manually from the Actions tab.
+# Fill in the version and branch/tag when you click "Run workflow".
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 4.0.1)'
+        required: true
+      src_ref:
+        description: 'Starlink/starjava branch or tag to build from'
+        required: true
+        default: 'master'
+      changes:
+        description: 'Changes in this release (one bullet per line, no dashes needed)'
+        required: true
+      prerelease:
+        description: 'Mark as pre-release?'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out this repo (build setup)
+        uses: actions/checkout@v4
+
+      # --- Restore proprietary assets from secrets ---
+      # These are stored as base64-encoded secrets in the repo settings.
+      # See README.md "Setting up secrets" for how to encode and add them.
+
+      - name: Restore JAI jars
+        run: |
+          mkdir -p resources/jai
+          echo "${{ secrets.JAI_JARS_B64 }}" | base64 -d > /tmp/jai.tar.gz
+          tar -xzf /tmp/jai.tar.gz -C resources/jai/
+
+      - name: Restore IzPack
+        run: |
+          mkdir -p resources/izpack
+          echo "${{ secrets.IZPACK_B64 }}" | base64 -d > /tmp/izpack.tar.gz
+          tar -xzf /tmp/izpack.tar.gz -C resources/izpack/
+
+      # install.xml and extra-files are committed openly in this repo,
+      # so no secret needed for those.
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Update splat.news
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          SEPARATOR=$(printf '=%.0s' $(seq 1 ${#VERSION}))
+
+          # Format each line as a bullet point
+          CHANGES=$(echo "${{ github.event.inputs.changes }}" \
+              | sed 's/^[[:space:]]*/- /')
+
+          # Build new entry
+          NEW_ENTRY="   ${VERSION}
+   ${SEPARATOR}
+$(echo "$CHANGES" | sed 's/^/   /')"
+
+          # Prepend after the header line ("1 Starlink SPLAT news.")
+          HEADER=$(head -1 resources/splat.news)
+          REST=$(tail -n +2 resources/splat.news)
+          printf '%s\n\n\n%s\n\n%s\n' "$HEADER" "$NEW_ENTRY" "$REST" \
+              > resources/splat.news
+
+          echo "--- splat.news preview (first 20 lines) ---"
+          head -20 resources/splat.news
+
+      - name: Build installer jar
+        run: |
+          DOCKER_BUILDKIT=1 docker build \
+            --platform linux/amd64 \
+            --target export \
+            --build-arg VERSION="${{ github.event.inputs.version }}" \
+            --build-arg SRC_REF="${{ github.event.inputs.src_ref }}" \
+            --build-arg MODE=github \
+            --build-context source=. \
+            --output type=local,dest=./dist \
+            .
+
+      - name: Verify jar was produced
+        run: |
+          ls -lh dist/
+          test -f "dist/splat-vo-${{ github.event.inputs.version }}.jar" \
+            || (echo "Expected jar not found in dist/" && exit 1)
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: SPLAT-VO ${{ github.event.inputs.version }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+          generate_release_notes: true
+          files: dist/splat-vo-${{ github.event.inputs.version }}.jar
+          body: |
+            ## SPLAT-VO ${{ github.event.inputs.version }}
+
+            Built from `Starlink/starjava` branch/tag: `${{ github.event.inputs.src_ref }}`
+
+            ### Installation
+            Download `splat-vo-${{ github.event.inputs.version }}.jar` and run:
+            ```
+            java -jar splat-vo-${{ github.event.inputs.version }}.jar
+            ```

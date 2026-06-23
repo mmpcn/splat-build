@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+
+<!--  Create installer for SPLAT-VO release -->
+
+<izpack:installation version="5.0"
+    xmlns:izpack="http://izpack.org/schema/installation"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://izpack.org/schema/installation http://izpack.org/schema/5.0/izpack-installation-5.0.xsd">
+
+ <info>
+        <appname>SPLAT-VO</appname>
+        <appversion>4.0-beta</appversion>
+        <appsubpath>splat-vo</appsubpath>
+        <javaversion>1.8</javaversion>
+        <authors>
+            <author name="Starlink Project Support" 
+                    email="starlink@jiscmail.ac.uk"/>
+            <author name="Peter W. Draper (developer)" 
+                    email="p.w.draper@durham.ac.uk"/>
+            <author name="Mark Taylor (developer)" 
+                    email="m.b.taylor@bristol.ac.uk"/>
+            <author name="Margarida Castro Neves (developer)" 
+                    email="mcneves@ari.uni-heidelberg.de"/>
+        </authors>
+        <url>http://www.starlink.ac.uk/splat/</url>
+    </info>
+
+    <guiprefs width="800" height="480" resizable="yes">
+       <!--laf name="substance">
+          <os family="unix"/>
+       </lafi-->
+    </guiprefs>
+    
+    <locale>
+        <langpack iso3="eng"/>
+    </locale>
+    
+    <resources>
+        <res id="InfoPanel.info" src="docs/splat/splat.news"/>
+        <res id="Installer.image" src="StarlinkGavo.png"/>
+
+        <res src="shortcutSpec.xml" id="shortcutSpec.xml"/>
+        <res src="Unix_shortcutSpec.xml" id="Unix_shortcutSpec.xml"/>
+    </resources>
+    
+    <panels>
+        <panel classname="HelloPanel"/>
+        <panel classname="InfoPanel"/>
+        <panel classname="TargetPanel"/> 
+        <panel classname="InstallPanel"/>
+        <panel classname="ShortcutPanel"/>
+        <panel classname="SimpleFinishPanel"/>
+    </panels>
+    
+    <packs>
+        <pack name="Base" required="yes">
+            <description>The installation files</description>
+            <file src="bin" targetdir="$INSTALL_PATH"/>
+            <file src="docs" targetdir="$INSTALL_PATH"/>
+            <file src="etc" targetdir="$INSTALL_PATH"/>
+            <file src="lib" targetdir="$INSTALL_PATH"/>
+
+            <parsable targetfile="$INSTALL_PATH/bin/splat/splat" type="shell"/>
+            <parsable targetfile="$INSTALL_PATH/bin/starjava" type="shell"/>
+
+            <executable targetfile="$INSTALL_PATH/bin/splat/splat"
+                        stage="never" keep="true" type="bin"/>
+            <executable targetfile="$INSTALL_PATH/bin/starjava" 
+                        stage="never" keep="true" type="bin"/>
+
+        </pack>
+    </packs>
+
+    <!-- The native libraries to add -->
+    <natives>
+    	<native type="izpack" name="ShellLink.dll"/>
+    </natives>
+
+</izpack:installation>

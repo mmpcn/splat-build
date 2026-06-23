@@ -1,0 +1,165 @@
+#!/bin/csh 
+
+# Various files we do not want to distribute...
+unalias rm
+
+#  ANT
+rm bin/ant
+rm bin/ant.bat
+rm bin/ant.cmd
+rm bin/antenv.cmd
+rm bin/antRun
+rm bin/antRun.bat
+rm bin/antRun.pl
+rm bin/complete-ant-cmd.pl
+rm bin/envset.cmd
+rm bin/lcp.bat
+rm bin/runant.pl
+rm bin/runant.py
+rm bin/runrc.cmd
+
+
+rm -r -f docs/ant
+rm -r -f etc/ant
+
+rm lib/ant-antlr.jar
+rm lib/ant-apache-bcel.jar
+rm lib/ant-apache-bsf.jar
+rm lib/ant-apache-log4j.jar
+rm lib/ant-apache-oro.jar
+rm lib/ant-apache-regexp.jar
+rm lib/ant-apache-resolver.jar
+rm lib/ant-bootstrap.jar
+rm lib/ant-commons-logging.jar
+rm lib/ant-commons-net.jar
+rm lib/ant-jai.jar
+rm lib/ant.jar
+rm lib/ant-javamail.jar
+rm lib/ant-jdepend.jar
+rm lib/ant-jmf.jar
+rm lib/ant-jsch.jar
+rm lib/ant-junit.jar
+rm lib/ant-launcher.jar
+rm lib/ant-netrexx.jar
+rm lib/ant-nodeps.jar
+rm lib/ant-starteam.jar
+rm lib/ant-stylebook.jar
+rm lib/ant-swing.jar
+rm lib/ant-testutil.jar
+rm lib/ant-trax.jar
+rm lib/ant-weblogic.jar
+rm lib/jarbundler-1.8.1.jar
+rm lib/LICENSE.ant
+rm lib/LICENSE.dom
+rm lib/LICENSE.jarbundler
+rm lib/LICENSE.sax
+rm lib/LICENSE.xerces
+rm lib/xercesImpl.jar
+rm lib/xml-apis.jar
+
+#  javadocs
+rm -r -f docs/*/javadocs
+
+#  non-SPLAT Docs
+
+rm -r -f docs/array
+rm -r -f docs/astgui
+rm -r -f docs/astrogrid
+rm -r -f docs/axis/ant
+rm -r -f docs/axis/apiDocs
+rm -r -f docs/axis/*.html
+rm -r -f docs/axis/docbook
+rm -r -f docs/axis/images
+rm -r -f docs/axis/*.bib
+rm -r -f docs/axis/*.css
+rm -r -f docs/axis/*.pdf
+rm -r -f docs/connect
+rm -r -f docs/datanode
+rm -r -f docs/diva/api
+rm -r -f docs/diva/packages
+rm -r -f docs/diva/demo
+rm -r -f docs/diva/javadocs
+rm -r -f docs/fits
+rm -r -f docs/gbin
+rm -r -f docs/hds
+rm -r -f docs/hdx
+rm -r -f docs/help
+rm -r -f docs/jetty
+rm -r -f docs/jniast
+rm -r -f docs/jnihds
+rm -r -f docs/jsky/javadocs
+rm -r -f docs/jsky/javadoc
+rm -r -f docs/junit
+rm -r -f docs/ndx
+rm -r -f docs/pal
+rm -r -f docs/plastic
+rm -r -f docs/soapserver
+rm -r -f docs/srb
+rm -r -f docs/table
+rm -r -f docs/tamfits/javadocs
+rm -r -f docs/tamfits/*.gz
+rm -r -f docs/util
+rm -r -f docs/vo
+rm -r -f docs/votable
+rm -r -f docs/mirage
+rm -r -f docs/task
+rm -r -f docs/cdf
+rm -r -f docs/registry
+
+#  SPLAT docs
+
+rm -r -f docs/splat/api*
+rm -r -f docs/splat/beanshell*
+rm -r -f docs/splat/*.orig
+rm -r -f docs/splat/*.aux
+rm -r -f docs/splat/*.tex
+rm -r -f docs/splat/*.log
+rm -r -f docs/splat/*.dvi
+rm -r -f docs/splat/*.out
+rm -r -f docs/splat/gifs
+rm -r -f docs/splat/HelpSet.hs
+rm -r -f docs/splat/hypertext
+rm -r -f docs/splat/make*
+rm -r -f docs/splat/Map.jhm
+rm -r -f docs/splat/JavaHelpSearch
+rm -r -f docs/splat/programming*
+rm -r -f docs/splat/README.ast
+rm -r -f docs/splat/sun243_figures
+rm -r -f docs/splat/*.htx
+rm -r -f docs/splat/TOC.xml
+rm -r -f docs/splat/javadocs
+rm -r -f docs/splat/obsolete
+rm -r -f docs/splat/*.gz
+
+#libraries that have been copied twice ???
+rm -f  lib/*.jar
+rm -f  lib/amd64/*.jar
+rm -f  lib/x86_64/*.jar
+rm -f  lib/x86/*.jar
+rm -f  lib/i386/*.jar
+
+# remove plastic stuff
+rm -r -f etc/plastic
+rm -r -f lib/plastic*
+rm -r -f bin/plastic*
+
+# remove plastic stuff
+rm -r -f etc/xdoc
+rm -r -f lib/xdoc
+rm -r -f bin/xdoc
+
+# obsolete libraries
+rm -r -f lib/sparc
+rm -r -f lib/ppc
+
+# bin stuff
+rm -r -f vo
+rm -r -f task
+rm -r -f tablecopy
+rm -r -f starmirage
+rm -r -f cdf
+
+
+#  SPLAT shareable, no good for webstart.
+
+#rm -r -f lib/*/libsplat*
