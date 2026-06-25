@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         csh \
         unzip \
+        zip \
         wget \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
@@ -38,11 +39,26 @@ ENV PATH=$ANT_PATH:$DEV_INSTALL/bin:$PATH
 # Committed directly in resources/jai/ -- 2MB total, LGPL licensed.
 COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
 
-# --- IzPack 5.2.0 compiler from Maven Central ---
-# The standalone compiler jar is all we need -- no installation required.
-# It replaces the `compile` command from the original doit.sh.
-RUN wget -q https://repo1.maven.org/maven2/org/codehaus/izpack/izpack-compiler/5.2.0/izpack-compiler-5.2.0-standalone.jar \
-        -O /opt/izpack-compiler.jar
+# --- IzPack 5.2.0 ---
+# Download the installer jar from Maven Central and install headlessly.
+# Using 5.2.0 to match the version used to write install.xml.
+RUN wget -q https://repo1.maven.org/maven2/org/codehaus/izpack/izpack-dist/5.2.4/izpack-dist-5.2.4-installer.jar \
+        -O /tmp/izpack-installer.jar && \
+    printf '<AutomatedInstallation langpack="eng">\n\
+  <com.izforge.izpack.panels.hello.HelloPanel id="0"/>\n\
+  <com.izforge.izpack.panels.target.TargetPanel id="1">\n\
+    <installpath>/opt/izpack</installpath>\n\
+  </com.izforge.izpack.panels.target.TargetPanel>\n\
+  <com.izforge.izpack.panels.packs.PacksPanel id="2">\n\
+    <pack index="0" name="Base" selected="true"/>\n\
+  </com.izforge.izpack.panels.packs.PacksPanel>\n\
+  <com.izforge.izpack.panels.install.InstallPanel id="3"/>\n\
+  <com.izforge.izpack.panels.finish.FinishPanel id="4"/>\n\
+</AutomatedInstallation>' > /tmp/izpack-auto.xml && \
+    java -jar /tmp/izpack-installer.jar /tmp/izpack-auto.xml && \
+    rm /tmp/izpack-installer.jar /tmp/izpack-auto.xml
+ENV IZPACK_PATH=/opt/izpack/bin
+ENV PATH=$PATH:$IZPACK_PATH
 
 WORKDIR /build
 RUN mkdir -p "$DEV_INSTALL"
