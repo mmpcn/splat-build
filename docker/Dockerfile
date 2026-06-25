@@ -139,3 +139,4 @@ RUN chmod +x /build/container-build.sh \
 # --- export stage: just the finished installer jar, nothing else ---
 FROM scratch AS export
 COPY --from=build /output/ /
+
