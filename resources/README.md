@@ -6,18 +6,14 @@ they're proprietary/no-longer-freely-distributed, or because they're
 internal to your release process:
 
 ## resources/jai/
-Java Advanced Imaging jars (e.g. `jai_core.jar`, `jai_codec.jar`,
-`mlibwrapper_jai.jar`, plus any native `.so` libs you currently have
-installed under your JDK 8's `jre/lib/ext`). Copy whatever you have on
-your Mac at that location into this folder. The Dockerfile copies the
-whole folder into the container JDK's `jre/lib/ext`.
+✅ No longer needed — JAI 1.1.3 (`jai_core.jar`, `jai_codec.jar`) is
+downloaded automatically from Maven Central at build time. You can
+delete this folder. (`jmf.jar` is not needed by SPLAT.)
 
 ## resources/izpack/
-Your IzPack installation — the directory that contains `bin/compile`
-(currently `/Application/IzPack` on your Mac). Copy the whole IzPack
-distribution directory here. Note its version somewhere (e.g. in a
-comment in this README) so we know which IzPack schema `install.xml`
-needs to target.
+✅ No longer needed — IzPack 5.2.0 compiler is downloaded automatically
+from Maven Central at build time as a standalone jar. You can delete
+this folder and don't need a local IzPack installation at all.
 
 ## resources/splat.news
 The running changelog file that gets copied into the installer. Copy

@@ -33,25 +33,24 @@ jobs:
       # These are stored as base64-encoded secrets in the repo settings.
       # See README.md "Setting up secrets" for how to encode and add them.
 
-      - name: Restore JAI jars
+      - name: Download JAI jars from Maven Central
         run: |
           mkdir -p resources/jai
-          echo "${{ secrets.JAI_JARS_B64 }}" | base64 -d > /tmp/jai.tar.gz
-          tar -xzf /tmp/jai.tar.gz -C resources/jai/
+          cd resources/jai
+          wget -q https://repo1.maven.org/maven2/com/sun/media/jai-core/1.1.3/jai-core-1.1.3.jar \
+              -O jai_core.jar
+          wget -q https://repo1.maven.org/maven2/com/sun/media/jai-codec/1.1.3/jai-codec-1.1.3.jar \
+              -O jai_codec.jar
 
-      - name: Restore IzPack
-        run: |
-          mkdir -p resources/izpack
-          echo "${{ secrets.IZPACK_B64 }}" | base64 -d > /tmp/izpack.tar.gz
-          tar -xzf /tmp/izpack.tar.gz -C resources/izpack/
-
-      # install.xml and extra-files are committed openly in this repo,
-      # so no secret needed for those.
+      # install.xml and extra-files are committed openly in this repo.
+      # JAI and IzPack are downloaded automatically during docker build
+      # from Maven Central -- no secrets needed for either.
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Update splat.news
+        if: ${{ github.event.inputs.prerelease == 'false' }}
         run: |
           VERSION="${{ github.event.inputs.version }}"
           SEPARATOR=$(printf '=%.0s' $(seq 1 ${#VERSION}))
