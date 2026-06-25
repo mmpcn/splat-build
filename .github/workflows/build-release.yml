@@ -17,7 +17,10 @@ on:
         required: true
       prerelease:
         description: 'Mark as pre-release?'
-        type: boolean
+        type: choice
+        options:
+          - 'true'
+          - 'false'
         default: true
 
 jobs:
