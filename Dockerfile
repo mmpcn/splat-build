@@ -33,13 +33,10 @@ ENV STAR_JAVA=$JAVA_HOME/bin/java \
 ENV ANT_PATH=$SOURCE_DIR/ant/bin
 ENV PATH=$ANT_PATH:$DEV_INSTALL/bin:$PATH
 
-# --- JAI 1.1.3 from Maven Central ---
-# Confirmed version 1.1.3 from the actual jars. Downloaded directly so
-# no local copy or secret is needed.
-RUN wget -q https://repo1.maven.org/maven2/com/sun/media/jai-core/1.1.3/jai-core-1.1.3.jar \
-        -O "$JAVA_HOME/jre/lib/ext/jai_core.jar" && \
-    wget -q https://repo1.maven.org/maven2/com/sun/media/jai-codec/1.1.3/jai-codec-1.1.3.jar \
-        -O "$JAVA_HOME/jre/lib/ext/jai_codec.jar"
+# --- JAI 1.1.3 ---
+# Not available on Maven Central (only POM published, no jar).
+# Committed directly in resources/jai/ -- 2MB total, LGPL licensed.
+COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
 
 # --- IzPack 5.2.0 compiler from Maven Central ---
 # The standalone compiler jar is all we need -- no installation required.
