@@ -17,7 +17,6 @@ on:
         required: true
       prerelease:
         description: 'Mark as pre-release?'
-        required: true
         type: boolean
         default: true
 
