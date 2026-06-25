@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         csh \
         unzip \
+        wget \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -30,18 +31,21 @@ ENV STAR_JAVA=$JAVA_HOME/bin/java \
     DEV_INSTALL=/build/install \
     JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 ENV ANT_PATH=$SOURCE_DIR/ant/bin
-ENV IZPACK_PATH=/opt/izpack/bin
-ENV PATH=$ANT_PATH:$IZPACK_PATH:$DEV_INSTALL/bin:$PATH
+ENV PATH=$ANT_PATH:$DEV_INSTALL/bin:$PATH
 
-# --- JAI: TODO you must supply this (see resources/README.md) ---
-# SPLAT will not build without JAI present in the JDK's jre/lib/ext.
-COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
+# --- JAI 1.1.3 from Maven Central ---
+# Confirmed version 1.1.3 from the actual jars. Downloaded directly so
+# no local copy or secret is needed.
+RUN wget -q https://repo1.maven.org/maven2/com/sun/media/jai-core/1.1.3/jai-core-1.1.3.jar \
+        -O "$JAVA_HOME/jre/lib/ext/jai_core.jar" && \
+    wget -q https://repo1.maven.org/maven2/com/sun/media/jai-codec/1.1.3/jai-codec-1.1.3.jar \
+        -O "$JAVA_HOME/jre/lib/ext/jai_codec.jar"
 
-# --- IzPack: TODO you must supply this (see resources/README.md) ---
-# Needs its bin/ directory on PATH so `compile` is available.
-# (chmod here because copying a macOS install often drops the +x bit)
-COPY resources/izpack/ /opt/izpack/
-RUN chmod -R a+rx /opt/izpack/bin
+# --- IzPack 5.2.0 compiler from Maven Central ---
+# The standalone compiler jar is all we need -- no installation required.
+# It replaces the `compile` command from the original doit.sh.
+RUN wget -q https://repo1.maven.org/maven2/org/codehaus/izpack/izpack-compiler/5.2.0/izpack-compiler-5.2.0-standalone.jar \
+        -O /opt/izpack-compiler.jar
 
 WORKDIR /build
 RUN mkdir -p "$DEV_INSTALL"
@@ -135,3 +139,4 @@ RUN chmod +x /build/container-build.sh \
 # --- export stage: just the finished installer jar, nothing else ---
 FROM scratch AS export
 COPY --from=build /output/ /
+
