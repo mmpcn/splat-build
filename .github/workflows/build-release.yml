@@ -26,17 +26,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Check out this repo (build setup)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # JAI and IzPack are downloaded automatically during docker build
       # from Maven Central -- no secrets needed for either.
       # install.xml and extra-files are committed openly in this repo.
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.11.0
 
       - name: Update splat.news
         if: github.event.inputs.prerelease == 'false'
@@ -73,7 +75,7 @@ jobs:
             || (echo "Expected jar not found in dist/" && exit 1)
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           tag_name: v${{ github.event.inputs.version }}
           name: SPLAT-VO ${{ github.event.inputs.version }}
