@@ -51,7 +51,7 @@ RUN curl -fL \
 
 # Create IzPack directory
 RUN mkdir -p /opt/izpack/lib
-ARG IZPACK_VERSION=5.4.0
+ARG IZPACK_VERSION=5.2.4
 # Fetch IzPack compiler + ALL dependencies
 RUN cs fetch org.codehaus.izpack:izpack-compiler:${IZPACK_VERSION} --classpath > /tmp/cp.txt
 
