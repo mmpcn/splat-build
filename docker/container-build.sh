@@ -49,7 +49,7 @@ cd "$RELEASE_DIR"
 
 set -e\n\
 java -cp "/opt/izpack/lib/*" \
-com.izforge.izpack.compiler.bootstrap.CompilerLauncher "$@"' \
+com.izforge.izpack.compiler.bootstrap.CompilerLauncher "$@" \
     install.xml -b . -o "/build/splat-vo-${VERSION}.jar" -k standard
 
 # 7. Hand the result to the output dir, named with the version.
