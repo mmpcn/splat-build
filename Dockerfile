@@ -44,13 +44,19 @@ COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
 # placing them all in /opt/izpack-deps. We then invoke CompilerLauncher
 # directly with that classpath -- no installation step needed.
 RUN apt-get update && apt-get install -y --no-install-recommends maven \
-    && rm -rf /var/lib/apt/lists/* \
-    && mvn -q dependency:copy-dependencies \
-        -Dartifact=org.codehaus.izpack:izpack-compiler:5.2.0 \
-        -DoutputDirectory=/opt/izpack-deps \
-        -DincludeArtifactIds=izpack-compiler
+    && rm -rf /var/lib/apt/lists/* 
+#\
+#    && mvn -q dependency:copy-dependencies \
+#        -Dartifact=org.codehaus.izpack:izpack-compiler:5.2.0 \
+#        -DoutputDirectory=/opt/izpack-deps \
+#        -DincludeArtifactIds=izpack-compiler
 
 WORKDIR /build
+COPY pom.xml .
+RUN mvn mvn -q dependency:copy-dependencies \
+        -Dartifact=org.codehaus.izpack:izpack-compiler:5.2.4 \
+        -DoutputDirectory=/opt/izpack-deps \
+        -DincludeArtifactIds=izpack-compiler
 RUN mkdir -p "$DEV_INSTALL"
 
 # Tell the Starlink build system where source + install dirs live
