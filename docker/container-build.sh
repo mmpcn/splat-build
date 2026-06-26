@@ -45,16 +45,12 @@ cp -r /build/extra-files/. "$RELEASE_DIR"/
 # 6. Run the IzPack compiler using Coursier-downloaded jars.
 cd "$RELEASE_DIR"
 
-RUN echo '#!/bin/bash\n\
+#RUN echo '#!/bin/bash\n\
 
 set -e\n\
-exec java -cp "/opt/izpack/lib/*" \
+java -cp "/opt/izpack/lib/*" \
 com.izforge.izpack.compiler.bootstrap.CompilerLauncher "$@"' \
     install.xml -b . -o "/build/splat-vo-${VERSION}.jar" -k standard
-
-
-#> /usr/local/bin/izpack-compile \
-#&& chmod +x /usr/local/bin/izpack-compile
 
 # 7. Hand the result to the output dir, named with the version.
 mv "/build/splat-vo-${VERSION}.jar" "$OUTPUT_DIR/"
