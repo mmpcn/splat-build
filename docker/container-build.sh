@@ -47,10 +47,12 @@ cd "$RELEASE_DIR"
 
 #RUN echo '#!/bin/bash\n\
 
-set -e\n\
 java -cp "/opt/izpack/lib/*" \
-com.izforge.izpack.compiler.bootstrap.CompilerLauncher "$@" \
-    install.xml -b . -o "/build/splat-vo-${VERSION}.jar" -k standard
+  com.izforge.izpack.compiler.bootstrap.CompilerLauncher \
+  install.xml -b . \
+  -o "/build/splat-vo-${VERSION}.jar" \
+  -k standard
+
 
 # 7. Hand the result to the output dir, named with the version.
 mv "/build/splat-vo-${VERSION}.jar" "$OUTPUT_DIR/"
