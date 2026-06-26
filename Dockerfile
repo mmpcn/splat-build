@@ -45,8 +45,8 @@ COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
 # placing them all in /opt/izpack-deps. We then invoke CompilerLauncher
 # directly with that classpath -- no installation step needed.
 
-RUN curl -fL -o /usr/local/bin/cs \
-  https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux \
+RUN curl -fL \
+  https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz | gzip -d > /usr/local/bin/cs \
  && chmod +x /usr/local/bin/cs
 
 # Create IzPack directory
