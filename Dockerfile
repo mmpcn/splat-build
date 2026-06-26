@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         zip \
         wget \
+        curl \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,24 +40,32 @@ ENV PATH=$ANT_PATH:$DEV_INSTALL/bin:$PATH
 # Committed directly in resources/jai/ -- 2MB total, LGPL licensed.
 COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
 
-# --- IzPack 5.2.0 compiler via Maven ---
-# Maven resolves izpack-compiler and all its transitive dependencies,
+# --- IzPack 5.2.0 compiler via Coursier ---
+# Coursier resolves izpack-compiler and all its transitive dependencies,
 # placing them all in /opt/izpack-deps. We then invoke CompilerLauncher
 # directly with that classpath -- no installation step needed.
-RUN apt-get update && apt-get install -y --no-install-recommends maven \
-    && rm -rf /var/lib/apt/lists/* 
-#\
-#    && mvn -q dependency:copy-dependencies \
-#        -Dartifact=org.codehaus.izpack:izpack-compiler:5.2.0 \
-#        -DoutputDirectory=/opt/izpack-deps \
-#        -DincludeArtifactIds=izpack-compiler
 
+RUN curl -fL -o /usr/local/bin/cs \
+  https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux \
+ && chmod +x /usr/local/bin/cs
+
+# Create IzPack directory
+RUN mkdir -p /opt/izpack/lib
+
+# Fetch IzPack compiler + ALL dependencies
+RUN cs fetch org.codehaus.izpack:izpack-compiler:${IZPACK_VERSION} --classpath > /tmp/cp.txt
+
+# Copy all jars into image (deterministic build)
+RUN tr ':' '\n' < /tmp/cp.txt | while read f; do cp "$f" /opt/izpack/lib/; done
 WORKDIR /build
-COPY pom.xml .
-RUN mvn mvn -q dependency:copy-dependencies \
-        -Dartifact=org.codehaus.izpack:izpack-compiler:5.2.4 \
-        -DoutputDirectory=/opt/izpack-deps \
-        -DincludeArtifactIds=izpack-compiler
+RUN echo '#!/bin/bash\n\
+set -e\n\
+exec java -cp "/opt/izpack/lib/*" \
+com.izforge.izpack.compiler.bootstrap.CompilerLauncher "$@"' \
+> /usr/local/bin/izpack-compile \
+&& chmod +x /usr/local/bin/izpack-compile
+
+
 RUN mkdir -p "$DEV_INSTALL"
 
 # Tell the Starlink build system where source + install dirs live
@@ -148,4 +157,5 @@ RUN chmod +x /build/container-build.sh \
 # --- export stage: just the finished installer jar, nothing else ---
 FROM scratch AS export
 COPY --from=build /output/ /
+
 
