@@ -42,9 +42,11 @@ find "$RELEASE_DIR" \( -name "*.sh" -o -name "*.csh" \) \
 # 5. Drop in the extra files (shortcuts, icon, bin/lib/etc skeleton).
 cp -r /build/extra-files/. "$RELEASE_DIR"/
 
-# 6. Run the IzPack compiler.
+# 6. Run the IzPack compiler using Maven-downloaded jars.
 cd "$RELEASE_DIR"
-compile install.xml -b . -o "/build/splat-vo-${VERSION}.jar" -k standard
+java -cp "/opt/izpack-deps/*" \
+    com.izforge.izpack.compiler.bootstrap.CompilerLauncher \
+    install.xml -b . -o "/build/splat-vo-${VERSION}.jar" -k standard
 
 # 7. Hand the result to the output dir, named with the version.
 mv "/build/splat-vo-${VERSION}.jar" "$OUTPUT_DIR/"
