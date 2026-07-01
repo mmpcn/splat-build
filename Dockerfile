@@ -40,6 +40,7 @@ ENV PATH=$ANT_PATH:$DEV_INSTALL/bin:$PATH
 # Committed directly in resources/jai/ -- 2MB total, LGPL licensed.
 COPY resources/jai/ $JAVA_HOME/jre/lib/ext/
 
+
 # --- IzPack 5.2.0 compiler via Coursier ---
 # Coursier resolves izpack-compiler and all its transitive dependencies,
 # placing them all in /opt/izpack-deps. We then invoke CompilerLauncher
@@ -64,7 +65,6 @@ exec java -cp "/opt/izpack/lib/*" \
 com.izforge.izpack.compiler.bootstrap.CompilerLauncher "$@"' \
 > /usr/local/bin/izpack-compile \
 && chmod +x /usr/local/bin/izpack-compile
-
 
 RUN mkdir -p "$DEV_INSTALL"
 
@@ -126,14 +126,14 @@ RUN sed -i -E \
 
 # --- build all sources, then install SPLAT + its dependencies ---
 WORKDIR $SOURCE_DIR
-# Confirmed against the real build.xml: "build" and "install" are
-# independent top-level targets (install doesn't depend on build), but
-# per-package "install" -> "dist" -> "jars" -> "build", and later
-# packages need earlier ones already *installed* (not just built) to
-# find their jars on the classpath. `build install` together is the
-# officially documented sequence -- this is no longer a guess.
+
+# ant build compiles everything. targetdeps splat install then installs
+# only SPLAT's dependencies selectively, giving a leaner install dir
+# than running ant build install (which installs the full suite).
 RUN "$ANT_PATH/ant" clean
-RUN "$ANT_PATH/ant" build install
+RUN "$ANT_PATH/ant" build
+
+#install
 RUN ./scripts/targetdeps splat install
 
 # Smoke test: confirm the launcher script exists & is runnable.

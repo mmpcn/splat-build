@@ -11,21 +11,31 @@ OUTPUT_DIR="/output"
 
 mkdir -p "$RELEASE_DIR" "$OUTPUT_DIR"
 
-# 1. Start the release dir from the installed (ant build install /
-#    targetdeps install) output -- this is what DEV_INSTALL points at.
-cp -ax "$DEV_INSTALL"/. "$RELEASE_DIR"/
 
-# 2. Run the prune script supplied in resources/removed_files.lis.
-#    Confirmed by inspecting the real file: it's an actual csh-flavored
-#    shell script (rm / rm -r -f commands, glob patterns, comments),
-#    not a plain path list. Run it directly from inside the release
-#    dir, same as the original recipe does. The csh shebang line and
-#    `unalias rm` are harmless no-ops under bash (the shebang is just
-#    a comment to bash; unalias on a non-existent alias fails quietly
-#    since we don't use `set -e` for this call).
+# 1. Copy the install dir directly into the release dir.
+#    targetdeps splat install already installed only SPLAT's dependencies,
+#    so DEV_INSTALL is already clean -- no selective copy needed.
+cp -ax "$DEV_INSTALL"/. "$RELEASE_DIR"/
+ 
+echo "Release dir size after copy: $(du -sh "$RELEASE_DIR" | cut -f1)"
+
+
+
+# Keep current architectures' native libs only.
+#for arch in amd64 aarch64 x86_64; do
+#  src="$DEV_INSTALL/lib/$arch"
+#  [ -d "$src" ] && cp -a "$src" "$RELEASE_DIR/lib/"
+#done
+
+
+# 2. Still run removed_files.lis on top -- it strips a few specific
+#    files (ant jars accidentally pulled in via deps above, javadocs,
+#    etc.) that selective copying alone doesn't catch.
 if [ -s /build/removed_files.lis ]; then
-  (cd "$RELEASE_DIR" && bash /build/removed_files.lis)
+  (cd "$RELEASE_DIR" && bash /build/removed_files.lis 2>/dev/null || true)
 fi
+
+echo "Release dir size after removed_files.lis: $(du -sh "$RELEASE_DIR" | cut -f1)"
 
 # 3. Copy in install.xml and splat.news (both not part of the build
 #    output -- supplied via resources/).
@@ -45,13 +55,7 @@ cp -r /build/extra-files/. "$RELEASE_DIR"/
 # 6. Run the IzPack compiler using Coursier-downloaded jars.
 cd "$RELEASE_DIR"
 
-#RUN echo '#!/bin/bash\n\
-
-java -cp "/opt/izpack/lib/*" \
-  com.izforge.izpack.compiler.bootstrap.CompilerLauncher \
-  install.xml -b . \
-  -o "/build/splat-vo-${VERSION}.jar" \
-  -k standard
+izpack-compile install.xml -b . -o "/build/splat-vo-${VERSION}.jar" -k standard
 
 
 # 7. Hand the result to the output dir, named with the version.
