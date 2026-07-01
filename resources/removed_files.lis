@@ -134,6 +134,7 @@ rm -r -f docs/splat/*.gz
 #libraries that have been copied twice ???
 rm -f  lib/*.jar
 rm -f  lib/amd64/*.jar
+rm -f  lib/aarch64/*.jar
 rm -f  lib/x86_64/*.jar
 rm -f  lib/x86/*.jar
 rm -f  lib/i386/*.jar
@@ -151,6 +152,8 @@ rm -r -f bin/xdoc
 # obsolete libraries
 rm -r -f lib/sparc
 rm -r -f lib/ppc
+rm -r -f lib/i386
+rm -r -f lib/x86
 
 # bin stuff
 rm -r -f vo
