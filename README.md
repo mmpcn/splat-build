@@ -20,7 +20,7 @@ Finished releases are published automatically under
 
 ## Local build (for development)
 
-Clone the starjava source to your Mac, edit normally, then build:
+Clone the starjava source locally, edit normally, then build:
 
 ```bash
 git clone https://github.com/Starlink/starjava.git ~/starjava
@@ -36,6 +36,8 @@ Or build directly from a GitHub branch:
 ```
 
 Result: `./dist/splat-vo-<version>.jar`
+
+*Windows users:** requires Docker Desktop with WSL2 backend.
 
 Test it:
 ```bash
